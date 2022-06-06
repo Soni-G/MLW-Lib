@@ -131,32 +131,7 @@ class Project():
                 "exception": ex
             }
 
-    def resource(self, resource_name):
-        """
-        resource method in Project class. Create Resource class object for a given resource name.
-
-        :param resource_name: name of resource
-        :type project_id: String
-
-        :return: Resource class object
-        :type: class object
-        """
-        return Resource(self.__client, self.__project_id, resource_name)
-
-
-class Resource():
-    """
-    Resource class, contains methods for resource operations like resource download etc.
-
-    """
-    def __init__(self, client, project_id, resource_name):
-        self.__client = client
-        self.__c8y_base_url = self.__client.c8y_base_url
-        self.__request_session = self.__client.request_session
-        self.__project_id = project_id
-        self.__resource_name = resource_name
-
-    def download_resource(self):
+    def download_resource(self, resource_name):
         """
         download_resource method in Resource class. Download a resource from a project in MLW.
 
@@ -164,16 +139,16 @@ class Resource():
         :type: dictionary
         """
         try:
-            download_url = URLS.MLW.DOWNLOAD_RESOURCE.format(self.__c8y_base_url, self.__project_id, self.__resource_name)
+            download_url = URLS.MLW.DOWNLOAD_RESOURCE.format(self.__c8y_base_url, self.__project_id, resource_name)
             response = self.__request_session.get(download_url, proxies=BYPASS_PROXY)
             if response.status_code == 200:
-                open(self.__resource_name, 'wb').write(response.content)
+                open(resource_name, 'wb').write(response.content)
                 return {"msg": "Resource downloaded from MLW successfully."}
             else:
                 raise requests.HTTPError("Resource download failed from MLW.")
         except Exception as ex:
             return {
-                "message": "Resource, " + self.__resource_name + " download failed from MLW.",
+                "message": "Resource, " + resource_name + " download failed from MLW.",
                 "exception": ex
             }
 
