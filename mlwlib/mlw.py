@@ -4,8 +4,8 @@ This module contains functions for MLW library which will help download & upload
 
 import requests
 import json
-from base.constants import URLS, BYPASS_PROXY
-from base.base import HTTPClient
+from mlwlib.base.constants import URLS, BYPASS_PROXY
+from mlwlib.base.base import HTTPClient
 
 
 class MLWClient():
