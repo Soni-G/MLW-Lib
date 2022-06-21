@@ -79,6 +79,7 @@ class Project():
         self.__c8y_base_url = self.__client.c8y_base_url
         self.__request_session = self.__client.request_session
         self.__project_id = self.get_project_id(project_name)
+        self.__project_name = project_name
 
     def get_project_id(self, project_name):
         """
@@ -133,14 +134,15 @@ class Project():
                 if show_json:
                     return {"resourceList": df_filtered_resource_data.to_dict('records')}
                 else:
-                    df_filtered_resource_data.set_index(df_filtered_resource_data["name"], inplace=True)
+                    if not df_filtered_resource_data.empty:
+                        df_filtered_resource_data.set_index(df_filtered_resource_data["name"], inplace=True)
                     return df_filtered_resource_data
             else:
                 raise requests.HTTPError("Unable to fetch list of resources from MLW")
         except Exception as ex:
             return {
                 "resourceList": None,
-                "message": "Unable to fetch list of resources for project "+ self.__project_id + " from MLW",
+                "message": "Unable to fetch list of resources for project "+ self.__project_name + " from MLW",
                 "exception": ex
             }
 
