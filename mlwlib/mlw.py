@@ -133,6 +133,7 @@ class Project():
                 if show_json:
                     return {"resourceList": df_filtered_resource_data.to_dict('records')}
                 else:
+                    df_filtered_resource_data.set_index(df_filtered_resource_data["name"])
                     return df_filtered_resource_data
             else:
                 raise requests.HTTPError("Unable to fetch list of resources from MLW")
