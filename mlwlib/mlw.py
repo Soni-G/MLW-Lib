@@ -46,8 +46,6 @@ class MLWClient():
                 else:
                     if not df_filtered_project_data.empty:
                         df_filtered_project_data.set_index(df_filtered_project_data["name"], inplace=True)
-                    df_filtered_project_data = df_filtered_project_data.style.set_properties(**{'text-align': 'left'})
-                    df_filtered_project_data = df_filtered_project_data.set_table_styles([dict(selector = 'th', props=[('text-align', 'left')])])
                     return df_filtered_project_data
             else:
                 raise requests.HTTPError("Unable to fetch projects from MLW")
@@ -144,8 +142,6 @@ class Project():
                 else:
                     if not df_filtered_resource_data.empty:
                         df_filtered_resource_data.set_index(df_filtered_resource_data["name"], inplace=True)
-                    df_filtered_resource_data = df_filtered_resource_data.style.set_properties(**{'text-align': 'left'})
-                    df_filtered_resource_data = df_filtered_resource_data.set_table_styles([dict(selector = 'th', props=[('text-align', 'left')])])
                     return df_filtered_resource_data
             else:
                 raise requests.HTTPError("Unable to fetch list of resources from MLW")
