@@ -6,6 +6,7 @@ import requests
 import json
 from base.constants import URLS, BYPASS_PROXY
 from base.base import HTTPClient
+import pandas as pd
 
 
 class MLWClient():
@@ -39,7 +40,7 @@ class MLWClient():
                 project_data=json.loads(response.text)['data']
                 if project_data:
                     for project in project_data:
-                        dict_of_projects[project["id"]]= {"name": project["name"]}
+                        dict_of_projects[project["name"]]= {"id": project["id"], "name": project["name"]}
                 return dict_of_projects
             else:
                 raise requests.HTTPError("Unable to fetch projects from MLW")
@@ -50,17 +51,17 @@ class MLWClient():
                 "exception": ex
             }
     
-    def project(self, project_id):
+    def project(self, project_name):
         """
-        Create Project class object for a given project_id.
+        Create Project class object for a given project_name.
 
-        :param project_id: Id of target project
-        :type project_id: String
+        :param project_name: name of target project
+        :type project_name: string
 
         :return: Project class object
         :type: class object
         """
-        return Project(self.__client, project_id)
+        return Project(self.__client, project_name)
 
 
 class Project():
@@ -68,19 +69,52 @@ class Project():
     Project class, contains methods for project operations like list resource in a project, resource upload to a project etc.
 
     """
-    def __init__(self, client, project_id):
+    def __init__(self, client, project_name):
         """ 
         init method of Project class
         
-        :param project_id: Id of target project
-        :type project_id: String
+        :param project_name: name of target project
+        :type project_name: string
         """
         self.__client = client 
         self.__c8y_base_url = self.__client.c8y_base_url
         self.__request_session = self.__client.request_session
-        self.__project_id = project_id
+        self.__project_id = self.get_project_id(project_name)
 
-    def list_resources(self):
+    def get_project_id(self, project_name):
+        """
+        Get project_id for a given project_name.
+
+        :param project_name: name of target project
+        :type project_name: String
+
+        :return: project_id
+        :type: string
+        """
+        try:
+            project_id = None
+            project_url = URLS.MLW.PROJECTS.format(self.__c8y_base_url)
+            response = self.__request_session.get(project_url)
+            if response.status_code == 200:
+                project_data=json.loads(response.text)['data']
+                if project_data:
+                    df_project_data = pd.DataFrame(project_data)
+                    filtered_df = df_project_data[df_project_data["name"] == project_name]["id"]
+                    if len(filtered_df) > 0:
+                        project_id = filtered_df.iloc[0]
+                    else:
+                        raise requests.exceptions.RequestException("project_name not found in MLW tenant.")
+                return project_id
+            else:
+                raise requests.HTTPError("Unable to fetch project details from MLW, while getting project_id.")
+        except Exception as ex:
+            return {
+                "message": "Unable to fetch project_id from MLW, for project name: "+ project_name,
+                "exception": ex
+            }
+
+
+    def list_resources(self, show_all_attributes=False, show_json=False):
         """
         list_resources method in Project class. List all resources in a MLW project.
 
@@ -88,16 +122,19 @@ class Project():
         :type: dictionary
         """
         try:
-            list_of_resources = {}
             resources_url = URLS.MLW.RESOURCES.format(self.__c8y_base_url, self.__project_id)
             response = self.__request_session.get(resources_url)
             if response.status_code == 200:
-                resource_data=json.loads(response.text)
-                if resource_data:
-                    list_of_resources["project_id"] = resource_data["id"]
-                    list_of_resources["project_name"] = resource_data["name"]
-                    list_of_resources["resources"] = resource_data["resources"]
-                return {"resourceList": list_of_resources}
+                resource_data=json.loads(response.text)["resources"]["data"]
+                df_resource_data = pd.DataFrame(resource_data)
+                if df_resource_data.empty or show_all_attributes:
+                    df_filtered_resource_data = df_resource_data
+                else:
+                    df_filtered_resource_data = df_resource_data[["id", "name", "size", "type", "extension"]]
+                if show_json:
+                    return {"resourceList": df_filtered_resource_data.to_dict('records')}
+                else:
+                    return df_filtered_resource_data
             else:
                 raise requests.HTTPError("Unable to fetch list of resources from MLW")
         except Exception as ex:
