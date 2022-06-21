@@ -24,7 +24,7 @@ class MLWClient():
         self.__client = HTTPClient(c8y_base_url)
         self.__request_session = self.__client.request_session
 
-    def list_projects(self):
+    def list_projects(self, show_all_attributes=False, show_json=False):
         """
         List all projects in a MLW Tenant.
 
@@ -32,15 +32,22 @@ class MLWClient():
         :type: dictionary
         """
         try:  
-            dict_of_projects = {}
+            list_of_projects = []
             project_url = URLS.MLW.PROJECTS.format(self.__c8y_base_url)
             response = self.__request_session.get(project_url)
             if response.status_code == 200:
                 project_data=json.loads(response.text)['data']
-                if project_data:
-                    for project in project_data:
-                        dict_of_projects[project["name"]]= {"id": project["id"], "name": project["name"]}
-                return dict_of_projects
+                df_project_data = pd.DataFrame(project_data)
+                if df_project_data.empty or show_all_attributes:
+                    df_filtered_project_data = df_project_data
+                else:
+                    df_filtered_project_data = df_project_data[["id", "name"]]
+                if show_json:
+                    return {"projectList": df_filtered_project_data.to_dict('records')}
+                else:
+                    if not df_filtered_project_data.empty:
+                        df_filtered_project_data.set_index(df_filtered_project_data["name"], inplace=True)
+                    return df_filtered_project_data
             else:
                 raise requests.HTTPError("Unable to fetch projects from MLW")
         except Exception as ex:
