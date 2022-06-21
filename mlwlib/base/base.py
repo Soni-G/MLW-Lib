@@ -31,9 +31,6 @@ class HTTPClient():
         :param c8y_base_url: url of MLW tenant
         :type c8y_base_url: String
         """
-        # self.__USERNAME = input('Enter username:  ')
-        # self.__PASSWORD = getpass.getpass(prompt='Enter MLW password')
-        # self.auth = HTTPBasicAuth(self.__USERNAME, self.__PASSWORD)
         self.c8y_base_url = c8y_base_url
         self.__auth = HTTPBasicAuth(input('Enter username:  '), getpass.getpass(prompt='Enter password: '))
         self.request_session = requests.session()

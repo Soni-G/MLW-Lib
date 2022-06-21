@@ -31,8 +31,7 @@ class MLWClient():
         :return: dictionary of projects
         :type: dictionary
         """
-        try:  
-            list_of_projects = []
+        try:
             project_url = URLS.MLW.PROJECTS.format(self.__c8y_base_url)
             response = self.__request_session.get(project_url)
             if response.status_code == 200:
