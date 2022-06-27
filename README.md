@@ -170,9 +170,9 @@ pip uninstall mlwlib
 
 ## Support
 
-You can get support by email at:
+You can get email support at:
 
-*  [AI-DEV-TEAM](ai-dev@softwareag.com) by sending your queries
+*  ai-dev@softwareag.com by sending your queries
 
 -----
 
