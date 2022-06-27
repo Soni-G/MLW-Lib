@@ -6,6 +6,6 @@ setup(
     description='MLW functions library',
     author='SAG',
     license='MIT',
-    install_requires=["pandas==1.1.5"],
+    install_requires=["pandas"],
     test_suite='tests',
 )
