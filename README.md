@@ -1,8 +1,5 @@
 # MLWLIB
 
-
-[![codecov](https://codecov.io/gh/SoftwareAG/nyoka/branch/master/graph/badge.svg)](https://codecov.io/gh/SoftwareAG/nyoka)
-[![license](https://img.shields.io/github/license/softwareag/nyoka.svg)](https://github.com/softwareag/nyoka/blob/master/LICENSE)
 [![Python](https://img.shields.io/badge/python-3.6%2B-blue)](https://pypi.org/project/nyoka/)
 
 
